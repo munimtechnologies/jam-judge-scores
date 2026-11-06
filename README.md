@@ -23,7 +23,13 @@ Code Apache-2.0 (see LICENSE); text and data CC BY 4.0.
   cost. Graded after the winners are announced on Dec 22, 2026, whatever the outcome.
 - `PREREGISTRATION-gdevelop-judges.md`: six predictions, committed on Nov 6, 2026 before the data run, about
   how far down the community ranking GDevelop's judges reached for the 45 cash winners of BIG Game Jams
-  #1-#9, and whether any had fewer ratings than the jam's median. Code and winner list in `gdevelop-judges/`.
+  #1-#9, and whether any had fewer ratings than the jam's median.
+- `RESULTS-gdevelop-judges.md`: graded Nov 6, 2026: 4 of 6 held. None of the 43 winners that could be
+  placed had fewer ratings than its jam's median (fewest: 9); median winner rank 8; 36 of 43 in the top 30
+  (P1 needed 85% and missed at 83.7%); one winner ranked 86th of 370. In 7 of 9 jams the few-ratings
+  adjustment pushed a raw top-10 entry out of the top 10. Data in `data/gdevelop-judges/`.
+- `PREREGISTRATION-gdevelop-judges-10.md`: predictions for GDevelop BIG Game Jam #10 (Nov 6-15, 2026),
+  committed on its opening day, before any rating, from the #1-#9 counts. Graded after its winners are posted.
 - `jam_census.py`: reads a jam's public results and rate pages (one request every 1.5 s; no author handles
   kept) and writes entries.csv and summary.json.
 - `jam_picks.py`: the same for jams with hand-picked awards, plus each entry's game page (browser play,
@@ -31,10 +37,14 @@ Code Apache-2.0 (see LICENSE); text and data CC BY 4.0.
 - `tools_check.py`: permutation test of tools-checklist answers vs scores, with Holm correction.
 - `grade_prereg.py`: grades the Slapjam #2 predictions from an entries.csv.
 - `grade_tgj02.py`: grades the thatgamejam #02 predictions from jam_picks.py's entries.csv.
-- `gdevelop-judges/judge_reach.py`: reads GDevelop jams' results pages (one request every 1.5 s; no author
-  names kept) and places each judges' winner in its jam's ranking with its ratings count.
+- `gdevelop-judges/judge_reach.py`: reads GDevelop jams' results pages (5 s between pages, waits and retries
+  when itch.io answers 429; no author names kept) and places each judges' winner in its jam's ranking with
+  its ratings count. `gdevelop-judges/grade.py` grades P1-P6 from its output, with and without the disclosed
+  title fixes.
 - `data/slapjam-ai-1/entries.csv`: the Slapjam #1 census (public game titles, scores, rating counts and
   tools-checklist answers).
+- `data/gdevelop-judges/`: `picks.csv` (the 45 winners, matched titles, ranks, ratings), `jams.csv` (one row
+  per jam with its median and checks) and `fixes.csv` (the three manual title fixes and their evidence).
 
 ## Run
 Python 3.10+ and the standard library only.
@@ -44,9 +54,11 @@ Python 3.10+ and the standard library only.
     python grade_prereg.py --csv out/entries.csv --out out/
     python jam_picks.py --jam thatgamejam02 --out out/tgj02 --delay 2.5
     python grade_tgj02.py --csv out/tgj02/entries.csv --out out/tgj02-grade
-    cd gdevelop-judges && python -m unittest -v test_judge_reach && python judge_reach.py --picks judge_picks.csv --out out/
+    cd gdevelop-judges && python -m unittest -v test_judge_reach test_grade && python judge_reach.py --picks judge_picks.csv --out out/
+    python grade.py --picks out/picks.csv --jams out/jams.csv --fixes ../data/gdevelop-judges/fixes.csv --entries-dir out/entries
 
 ## Limits
 Judge panels are small (3-7 ratings per entry in Slapjam), so one judge can move a score by up to 0.8, and
 thatgamejam #02 has only three judged winners. These are patterns, not causes. Scores are as itch.io shows
-them, including its adjustment for entries with fewer ratings than the jam's median.
+them today, including its adjustment for entries with fewer ratings than the jam's median; deleted entries
+are missing.
