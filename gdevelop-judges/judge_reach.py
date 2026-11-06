@@ -6,7 +6,7 @@
 # By MV2 of Munim, Inc. (mv2@munimtech.com). Made with AI agents (Anthropic Claude) working in his
 # name. Apache-2.0.
 #
-#   python judge_reach.py --picks judge_picks.csv --out OUT [--from-raw RAWDIR] [--delay 1.5]
+#   python judge_reach.py --picks judge_picks.csv --out OUT [--from-raw RAWDIR] [--delay 5]
 #
 # Writes OUT/picks.csv (one row per judges' winner), OUT/jams.csv (one row per jam), OUT/summary.json,
 # OUT/entries/<slug>.csv (rank, title, ratings, scores; no author names) and OUT/raw/<slug>/*.html.
@@ -14,6 +14,11 @@
 # 0.2 (2026-11-06): itch.io results pages put the game title in the <h2> link (to the game page, not to
 # the /rate/ page) and the ratings count in "Ranked 2nd with 68 ratings (Score: 4.062)". 0.1 took the
 # "View submission page" link text as the title and found no ratings count, so it matched 0 of 45 picks.
+# 0.2.2 (2026-11-06): transport only. itch.io answered "429 Too Many Requests" after about 40 pages at
+# one page per 1.5 s, so fetch() now waits (Retry-After, else 60 s, 120 s, ...) and retries a 429 up to
+# 8 times, and the default pause between pages is 5 s. Parsing, matching and every count are unchanged.
+# Gaps in a jam's ranks are real: itch.io keeps the ranks it gave and leaves a hole where an entry was
+# deleted later (GDevelop jam #1 page 1 has no 3rd, 11th, 19th or 20th).
 
 import argparse
 import csv
@@ -29,23 +34,41 @@ import urllib.error
 import urllib.request
 
 BASE = "https://itch.io"
-UA = "MV2-Munim-judge-reach/0.2 (MV2 of Munim, Inc.; mv2@munimtech.com)"
+UA = "MV2-Munim-judge-reach/0.2.2 (MV2 of Munim, Inc.; mv2@munimtech.com)"
 
 
-def fetch(url, tries=3):
+def retry_wait(err, attempt):
+    """Seconds to wait before retrying after HTTPError err (attempt counts from 0)."""
+    ra = None
+    try:
+        ra = err.headers.get("Retry-After") if err.headers is not None else None
+    except Exception:
+        ra = None
+    if ra and str(ra).strip().isdigit():
+        return min(600, max(5, int(str(ra).strip())))
+    return min(600, 60 * (attempt + 1))
+
+
+def fetch(url, tries=8, sleep=time.sleep, opener=None):
+    opener = opener or urllib.request.urlopen
     last = None
     for i in range(tries):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=30) as r:
+            with opener(req, timeout=30) as r:
                 return r.status, r.read().decode("utf-8", "replace")
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 return 404, ""
             last = e
+            if e.code == 429 or e.code >= 500:
+                w = retry_wait(e, i)
+                print("  HTTP %d on %s; waiting %d s (try %d of %d)" % (e.code, url, w, i + 1, tries), flush=True)
+                sleep(w)
+                continue
         except Exception as e:
             last = e
-        time.sleep(5 * (i + 1))
+        sleep(5 * (i + 1))
     raise last
 
 
@@ -211,7 +234,7 @@ def main(argv=None):
     ap.add_argument("--picks", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--from-raw", default="")
-    ap.add_argument("--delay", type=float, default=1.5)
+    ap.add_argument("--delay", type=float, default=5.0)
     a = ap.parse_args(argv)
     os.makedirs(os.path.join(a.out, "entries"), exist_ok=True)
     with open(a.picks, encoding="utf-8") as f:

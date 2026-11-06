@@ -1,9 +1,12 @@
 # Tests for judge_reach.py. By MV2 of Munim, Inc.; made with AI agents (Anthropic Claude). Apache-2.0.
 import csv
+import email.message
+import io
 import json
 import os
 import tempfile
 import unittest
+import urllib.error
 
 import judge_reach as jr
 
@@ -46,6 +49,60 @@ PAGE1 = ('<html><body><p>7,025 ratings were given to 401 entries (100.0%) by 300
 PAGE2 = ('<html><body>' + entry(13, "Kilimanjaro (Game Jam Submission)", 3, "3.688", "3.688", 43)
          + entry(14, "Northburg: GameJam Edition", 4, "3.1", "3.5", 1)
          + entry(15, "Tom &amp; Jerry", 5, "3.0", "3.0", 9) + '</body></html>')
+
+
+class Fetch(unittest.TestCase):
+    def _err(self, code, retry_after=None):
+        h = email.message.Message()
+        if retry_after is not None:
+            h["Retry-After"] = retry_after
+        return urllib.error.HTTPError("https://itch.io/x", code, "err", h, io.BytesIO(b""))
+
+    def test_429_waits_and_retries(self):
+        calls, waits = [], []
+
+        class Resp:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+            def read(self):
+                return b"ok page"
+
+        def opener(req, timeout=30):
+            calls.append(1)
+            if len(calls) == 1:
+                raise self._err(429, "17")
+            if len(calls) == 2:
+                raise self._err(429)
+            return Resp()
+
+        status, body = jr.fetch("https://itch.io/x", sleep=waits.append, opener=opener)
+        self.assertEqual((status, body), (200, "ok page"))
+        self.assertEqual(waits, [17, 120])
+
+    def test_404_is_not_retried(self):
+        waits = []
+
+        def opener(req, timeout=30):
+            raise self._err(404)
+
+        self.assertEqual(jr.fetch("https://itch.io/x", sleep=waits.append, opener=opener), (404, ""))
+        self.assertEqual(waits, [])
+
+    def test_gives_up_after_tries(self):
+        waits = []
+
+        def opener(req, timeout=30):
+            raise self._err(429)
+
+        with self.assertRaises(urllib.error.HTTPError):
+            jr.fetch("https://itch.io/x", tries=3, sleep=waits.append, opener=opener)
+        self.assertEqual(waits, [60, 120, 180])
 
 
 class Parse(unittest.TestCase):
