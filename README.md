@@ -1,7 +1,8 @@
 # jam-judge-scores
 
 What do game jam judges reward? This repo holds an open census of judge scores from itch.io jams, findings
-from Slapjam #1, and pre-registered tests of whether those findings hold in Slapjam #2 and thatgamejam #02.
+from Slapjam #1, and pre-registered tests of whether those findings hold in Slapjam #2, thatgamejam #02 and
+GDevelop's BIG Game Jams.
 
 By MV2 of Munim, Inc., mv2@munimtech.com. Made with AI agents (Anthropic Claude) working in his name.
 Code Apache-2.0 (see LICENSE); text and data CC BY 4.0.
@@ -14,11 +15,15 @@ Code Apache-2.0 (see LICENSE); text and data CC BY 4.0.
   https://munimv2.itch.io/jamshell/devlog/1711816/what-the-judges-rewarded-in-slapjam-1
 - `PREREGISTRATION-slapjam2.md`: nine predictions for Slapjam #2 (Oct 29-31, 2026), written and committed
   before the jam opened. Graded after judging ends on Nov 7, 2026, whatever the outcome.
+  `PREREGISTRATION-slapjam2-ADDENDUM.md` adds a sensitivity run that leaves out MV2's own two entries.
 - `PREREGISTRATION-thatgamejam02.md`: eight predictions for thatgamejam #02 (thatgamecompany's jam; $10,000),
   written on Oct 30, 2026, before submissions close (Nov 8) and before any voting. They test whether
   thatgamecompany's own picks again sit high in the community ranking (20 of 22 placings did so in its two
   earlier jams), whether browser games again get more ratings, and whether disclosing AI again shows no score
   cost. Graded after the winners are announced on Dec 22, 2026, whatever the outcome.
+- `PREREGISTRATION-gdevelop-judges.md`: six predictions, committed on Nov 6, 2026 before the data run, about
+  how far down the community ranking GDevelop's judges reached for the 45 cash winners of BIG Game Jams
+  #1-#9, and whether any had fewer ratings than the jam's median. Code and winner list in `gdevelop-judges/`.
 - `jam_census.py`: reads a jam's public results and rate pages (one request every 1.5 s; no author handles
   kept) and writes entries.csv and summary.json.
 - `jam_picks.py`: the same for jams with hand-picked awards, plus each entry's game page (browser play,
@@ -26,6 +31,8 @@ Code Apache-2.0 (see LICENSE); text and data CC BY 4.0.
 - `tools_check.py`: permutation test of tools-checklist answers vs scores, with Holm correction.
 - `grade_prereg.py`: grades the Slapjam #2 predictions from an entries.csv.
 - `grade_tgj02.py`: grades the thatgamejam #02 predictions from jam_picks.py's entries.csv.
+- `gdevelop-judges/judge_reach.py`: reads GDevelop jams' results pages (one request every 1.5 s; no author
+  names kept) and places each judges' winner in its jam's ranking with its ratings count.
 - `data/slapjam-ai-1/entries.csv`: the Slapjam #1 census (public game titles, scores, rating counts and
   tools-checklist answers).
 
@@ -37,6 +44,7 @@ Python 3.10+ and the standard library only.
     python grade_prereg.py --csv out/entries.csv --out out/
     python jam_picks.py --jam thatgamejam02 --out out/tgj02 --delay 2.5
     python grade_tgj02.py --csv out/tgj02/entries.csv --out out/tgj02-grade
+    cd gdevelop-judges && python -m unittest -v test_judge_reach && python judge_reach.py --picks judge_picks.csv --out out/
 
 ## Limits
 Judge panels are small (3-7 ratings per entry in Slapjam), so one judge can move a score by up to 0.8, and
