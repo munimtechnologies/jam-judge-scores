@@ -66,6 +66,15 @@ seven winners below 30th ranked 31, 42, 48, 49, 51, 54 and 86. P4 misses because
 judges' 3rd place in jam #7, ranked 86th of 370 with 39 ratings. That is above the jam's median of 20
 ratings: the judges went far down for it, but it was not a low-rating entry.
 
+## Reproduction check (2026-11-07)
+
+The published `grade.py` and its tests were run again on the published data files alone, in a fresh sandbox
+with no network (job `gdjudges-grade-v1`, 2026-11-07 00:00 UTC). The tests passed, and every number above came
+out the same: automatic matches 40, in the top 30 34 (85.0%), P1 held; with the three fixes 43 matched, 24 in
+the top 10, 36 in the top 30 (83.72%), 0 below the median, 7 of 9 jams with a pushed-out entry, worst rank 86,
+median rank 8, fewest ratings 9, ranks below 30th 31, 42, 48, 49, 51, 54 and 86; P1 missed, P2 and P3 held, P4
+missed, P5 and P6 held.
+
 ## More counts
 
 - 24 of 43 winners were in the community top 10, 30 of 40 (automatic) in the top 20. The pre-registration
