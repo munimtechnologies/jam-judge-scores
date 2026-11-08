@@ -1,0 +1,157 @@
+{
+  "results": [
+    {
+      "id": "H0",
+      "claim": "scored entries between 50 and 145",
+      "value": 209,
+      "held": false
+    },
+    {
+      "id": "H1",
+      "claim": "every pairwise Pearson correlation of the three criteria >= 0.50",
+      "value": {
+        "fun_score~visual_appeal_score": 0.735,
+        "fun_score~theme_following_score": 0.725,
+        "visual_appeal_score~theme_following_score": 0.584
+      },
+      "held": true
+    },
+    {
+      "id": "H2",
+      "claim": "Theme Following has the highest mean of the three criteria",
+      "value": {
+        "fun_score": 2.256,
+        "visual_appeal_score": 2.288,
+        "theme_following_score": 2.774
+      },
+      "held": true
+    },
+    {
+      "id": "H3",
+      "claim": "Fun has a lower mean than Visual Appeal",
+      "value": {
+        "fun_score": 2.256,
+        "visual_appeal_score": 2.288,
+        "theme_following_score": 2.774
+      },
+      "held": true
+    },
+    {
+      "id": "H4",
+      "claim": "the Overall #1 entry is not the top-Fun entry (no entry tied for Overall #1 has the top Fun score)",
+      "value": {
+        "overall_1": [
+          "Speed Slash"
+        ],
+        "overall_1_fun": [
+          4.5
+        ],
+        "top_fun": 4.5
+      },
+      "held": false
+    },
+    {
+      "id": "H5",
+      "claim": "every top-5 Overall entry has Theme >= 3.8 and no criterion under 3.5",
+      "value": [
+        {
+          "title": "Speed Slash",
+          "fun_score": 4.5,
+          "visual_appeal_score": 3.25,
+          "theme_following_score": 4.25
+        },
+        {
+          "title": "Escape Velocity",
+          "fun_score": 3.75,
+          "visual_appeal_score": 4.5,
+          "theme_following_score": 3.5
+        },
+        {
+          "title": "Shrinestone",
+          "fun_score": 3.75,
+          "visual_appeal_score": 3.5,
+          "theme_following_score": 4.0
+        },
+        {
+          "title": "Snailracer: Fast as Shell",
+          "fun_score": 3.5,
+          "visual_appeal_score": 3.75,
+          "theme_following_score": 3.75
+        },
+        {
+          "title": "DragonRacers",
+          "fun_score": 3.4,
+          "visual_appeal_score": 3.8,
+          "theme_following_score": 3.8
+        }
+      ],
+      "held": false
+    },
+    {
+      "id": "H6",
+      "claim": "the rank-5 Overall score is between 3.60 and 4.30",
+      "value": 3.667,
+      "held": true
+    },
+    {
+      "id": "H7",
+      "claim": "|Spearman(ratings count, Fun)| < 0.20",
+      "value": 0.451,
+      "held": false
+    },
+    {
+      "id": "H8",
+      "claim": "tools-only vs none-only: no criterion or Overall differs at Holm-adjusted p < 0.05",
+      "value": {
+        "question": "Which of these did your game use?",
+        "groups": {
+          "no_answer": 37,
+          "none_only": 156,
+          "tools_only": 16
+        },
+        "permutations": 20000,
+        "seed": 1,
+        "tests": [
+          {
+            "measure": "fun_score",
+            "tools_minus_none": 0.091,
+            "p": 0.575,
+            "p_holm": 1.0
+          },
+          {
+            "measure": "visual_appeal_score",
+            "tools_minus_none": 0.174,
+            "p": 0.3293,
+            "p_holm": 1.0
+          },
+          {
+            "measure": "theme_following_score",
+            "tools_minus_none": 0.088,
+            "p": 0.6133,
+            "p_holm": 1.0
+          },
+          {
+            "measure": "overall",
+            "tools_minus_none": 0.118,
+            "p": 0.4293,
+            "p_holm": 1.0
+          }
+        ]
+      },
+      "held": true
+    }
+  ],
+  "verdict": {
+    "held": 5,
+    "graded": 9,
+    "not_testable": [],
+    "core": [
+      "H1",
+      "H2",
+      "H4",
+      "H5"
+    ],
+    "core_replicated": false
+  },
+  "excluded_titles": []
+}
