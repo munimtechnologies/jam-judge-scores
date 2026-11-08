@@ -78,20 +78,52 @@ computes also equals itch.io's own Overall for both entries checked (Speed Slash
   scales an entry's score by sqrt(n / median) when it has fewer ratings (n) than the jam's median. In
   Slapjam #2 the median was 4 ratings and 77 of 209 entries had only 3, so their scores were multiplied by
   0.866. That alone ties ratings count to Fun. Slapjam #1 (H7 = -0.002) did not have this many short panels.
-  The pre-registered result stands as graded (H7 failed); an exploratory, not pre-registered, re-check on raw
-  Fun scores is queued and will be added below when it finishes, labelled as exploratory.
+  The pre-registered result stands as graded (H7 failed). The exploratory re-check on raw scores is below.
 - Panels are small (3-6 ratings per entry), so one judge can move a score by up to about 0.8.
 - These are patterns in one jam's scores, not causes. The jam grew from 137 to 209 scored entries, which
   may change who judges and how.
 - Scores are as itch.io showed them on 2026-11-07/08. Deleted entries are missing.
+
+## Exploratory re-check of H7 on raw scores (not pre-registered)
+
+This section was added after grading. It was **not** pre-registered and does not change any verdict above:
+H7 stays failed. It asks how much of H7's 0.451 comes from itch.io's below-median scaling. Run on
+2026-11-08 by `slapjam2-explore/explore_h7.py` (its 3 unit tests passed first) on the published
+`data/slapjam-ai-2/entries.csv`. Output: `results/slapjam2/explore-h7-primary.json` and
+`results/slapjam2/explore-h7-sens.json`.
+
+Ratings per entry: 3 ratings: 77 entries, 4: 107, 5: 24, 6: 1 (median 4). Exactly the 77 entries with 3
+ratings had their Fun score scaled.
+
+| Spearman with ratings count | All 209 | Without MV2's 2 entries (207) |
+|---|---|---|
+| Fun, adjusted (what H7 graded) | 0.451 | 0.457 |
+| Fun, raw | 0.262 | 0.271 |
+| Visual Appeal, raw | 0.245 | 0.250 |
+| Theme Following, raw | 0.185 | 0.191 |
+| Fun, raw, only entries with >= 4 ratings (132 / 131) | 0.252 | 0.254 |
+
+What this says, read plainly:
+
+- The scaling explains a bit under half of H7's number (0.451 to 0.262 on raw Fun), but not all of it.
+- On raw scores the link is still above H7's 0.20 bound for Fun and Visual Appeal, and it stays at 0.25
+  among entries that were never scaled. So in Slapjam #2, entries that got more ratings really were rated as
+  more fun, unlike Slapjam #1 (-0.002).
+- This data cannot say why. Two candidates: better games may draw extra raters, or the jam's judging may
+  have handed out panels unevenly. Neither was tested.
+- Lesson for later pre-registrations in this repository: say whether a test uses adjusted or raw scores, and
+  predict both.
 
 ## Files
 
 - `data/slapjam-ai-2/entries.csv`: the census (rate id, title, ratings count, rank / adjusted score / raw
   score per criterion, tools answer). No author names or handles.
 - `results/slapjam2/primary-grade.json`, `results/slapjam2/sens-grade.json`: the grader's output.
+- `results/slapjam2/explore-h7-primary.json`, `results/slapjam2/explore-h7-sens.json`: the exploratory
+  raw-score re-check above.
 - `run_census.py`, `test_run_census.py`: the transport wrapper described above.
-- `slapjam2-explore/explore_h7.py`: the exploratory raw-score re-check (not part of the grading).
+- `slapjam2-explore/explore_h7.py`, `slapjam2-explore/test_explore_h7.py`: the exploratory raw-score re-check
+  (not part of the grading).
 
 Reproduce:
 
@@ -99,6 +131,8 @@ Reproduce:
 python run_census.py --jam slapjam-ai-2 --out out --delay 5
 python grade_prereg.py --csv out/entries.csv --out out/primary
 python grade_prereg.py --csv out/entries.csv --out out/sens --exclude-title "Rush Order" --exclude-title "Nova Slingshot"
+python slapjam2-explore/explore_h7.py --csv data/slapjam-ai-2/entries.csv --out out/explore-primary
+python slapjam2-explore/explore_h7.py --csv data/slapjam-ai-2/entries.csv --out out/explore-sens --exclude-title "Rush Order" --exclude-title "Nova Slingshot"
 ```
 
 Scores on itch.io can change if entries are deleted, so a re-read may differ slightly from this census.

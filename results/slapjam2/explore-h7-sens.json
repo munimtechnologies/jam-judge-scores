@@ -1,0 +1,24 @@
+{
+  "label": "EXPLORATORY, not pre-registered",
+  "excluded_titles": [
+    "Rush Order",
+    "Nova Slingshot"
+  ],
+  "result": {
+    "entries": 207,
+    "median_ratings": 4,
+    "ratings_histogram": {
+      "3": 76,
+      "4": 106,
+      "5": 24,
+      "6": 1
+    },
+    "entries_with_fun_adjusted": 76,
+    "spearman_ratings_vs_fun_adjusted": 0.457,
+    "spearman_ratings_vs_fun_raw": 0.271,
+    "spearman_ratings_vs_visual_raw": 0.25,
+    "spearman_ratings_vs_theme_raw": 0.191,
+    "at_or_above_median_entries": 131,
+    "spearman_ratings_vs_fun_raw_at_or_above_median": 0.254
+  }
+}

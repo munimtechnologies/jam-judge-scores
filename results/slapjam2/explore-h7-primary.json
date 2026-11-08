@@ -1,0 +1,21 @@
+{
+  "label": "EXPLORATORY, not pre-registered",
+  "excluded_titles": [],
+  "result": {
+    "entries": 209,
+    "median_ratings": 4,
+    "ratings_histogram": {
+      "3": 77,
+      "4": 107,
+      "5": 24,
+      "6": 1
+    },
+    "entries_with_fun_adjusted": 77,
+    "spearman_ratings_vs_fun_adjusted": 0.451,
+    "spearman_ratings_vs_fun_raw": 0.262,
+    "spearman_ratings_vs_visual_raw": 0.245,
+    "spearman_ratings_vs_theme_raw": 0.185,
+    "at_or_above_median_entries": 132,
+    "spearman_ratings_vs_fun_raw_at_or_above_median": 0.252
+  }
+}
